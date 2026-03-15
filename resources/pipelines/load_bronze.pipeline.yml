@@ -1,0 +1,24 @@
+# The main pipeline for my_project
+
+resources:
+  pipelines:
+    load_bronze_pipeline:
+      name: load_bronze_pipeline
+      catalog: ${var.catalog}
+      tags:
+        purpose: ingestion
+      schema: ${var.schema}
+      configuration:
+        catalog: ${var.catalog}
+        schema: ${var.schema}
+        volume: ${var.volume}
+      serverless: true
+      root_path: "../../src/pipelines/load_bronze"
+      libraries:
+        - glob:
+            include: ../../src/pipelines/load_bronze/**
+
+      environment:
+        
+        dependencies:
+          - ../../dist/*.whl
