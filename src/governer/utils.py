@@ -1,9 +1,8 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
-from databricks.sdk.dbutils import RemoteDbUtils
 
 
-def save_frame_csv(df: DataFrame, output_path: str, dbutils: RemoteDbUtils) -> str:
+def save_frame_csv(df: DataFrame, output_path: str, dbutils: any) -> str:
     """Save a DataFrame to a single CSV file in the specified output path."""
     df.coalesce(1).write.mode("overwrite").csv(output_path, header=True)
     files = dbutils.fs.ls(output_path)
@@ -30,13 +29,3 @@ def validate_schema(df: DataFrame, schema: StructType) -> DataFrame:
         return validated_df
     except Exception as e:
         raise ValueError(f"Schema validation failed: {e}")
-
-
-def widget_or_default(dbutils: RemoteDbUtils, key: str, default=None):
-    """Get a widget value or return default if widget doesn't exist or is empty."""
-    try:
-        value = dbutils.widgets.get(key)
-        # Return default if value is None or empty string
-        return value if value and value.strip() else default
-    except Exception:
-        return default
