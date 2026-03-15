@@ -1,0 +1,28 @@
+resources:
+  jobs:
+    govern_table_comment_job:
+      name: govern_table_comment_job
+      description: "This job inspects known tables and govern that comment is sufficient"
+      tags:
+        purpose: data_governance
+        operator: ai
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: schema
+          default: ${var.schema}
+
+      tasks:
+        - task_key: table
+          environment_key: default
+          notebook_task:
+            notebook_path: ../../src/data_generation/clean_data_generate.ipynb
+          
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "4"
+            dependencies:
+              - dbldatagen
+              - ../../dist/*.whl

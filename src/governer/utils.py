@@ -1,5 +1,11 @@
+from dataclasses import dataclass
+from enum import Enum
+
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
+from databricks.sdk import WorkspaceClient
+from databricks.sdk.service.dashboards import GenieSpace, MessageStatus
+import json
 
 
 def save_frame_csv(df: DataFrame, output_path: str, dbutils: any) -> str:
@@ -29,3 +35,75 @@ def validate_schema(df: DataFrame, schema: StructType) -> DataFrame:
         return validated_df
     except Exception as e:
         raise ValueError(f"Schema validation failed: {e}")
+
+
+def get_genie_workspace(space_title: str, warehouse_id: str, tables: list[str]):
+    space_def = {
+        "version": "2",
+        "data_sources": {
+            "tables": [
+                #  {"identifier": "rowdoc.uladzimir_harabtsou.bronze_customers", "description": ["Customer master data"]},
+                #  {"identifier": "rowdoc.uladzimir_harabtsou.bronze_orders", "description": ["Orders"]},
+                #  {"identifier": "rowdoc.uladzimir_harabtsou.bronze_payments", "description": ["Payment transactions"]},
+            ],
+        },
+        ###
+        ###    "instructions": {
+        ###    "text_instructions": [
+        ###    {
+        ###        "id": "01f0b37c378e1c9100000000000000a1",
+        ###        "content": [
+        ###        "General instructions for the space."
+        ###        ]
+        ###    }
+        ###    ],
+        ### }
+    }
+    for table in tables:
+        space_def["data_sources"]["tables"].append({"identifier": table})
+
+    client = WorkspaceClient()
+    spaces = client.genie.list_spaces().spaces
+    for space in spaces:
+        if space.title == space_title:
+            client.genie.trash_space(space.space_id)
+            break
+    space = client.genie.create_space(
+        warehouse_id=warehouse_id,
+        title=space_title,
+        description="Genie workspace for Governer demo",
+        serialized_space=json.dumps(space_def),
+    )
+
+    return space
+
+
+@dataclass
+class AiResponse:
+    text: str | None
+    success: bool
+    error: str | None
+
+
+def trash_genie_workspace(space: GenieSpace) -> None:
+    client = WorkspaceClient()
+    client.genie.trash_space(space.space_id)
+
+
+def task_genie(space: GenieSpace, task: str) -> AiResponse:
+    client = WorkspaceClient()
+    response = AiResponse(None, False, None)
+    try:
+        message = client.genie.start_conversation_and_wait(space.space_id, task)
+        if message.status == MessageStatus.COMPLETED:
+            if len(message.attachments) > 0:
+                response.text = message.attachments[0].text.content
+                response.success = True
+            else:
+                response.error = f"Unexpected length of attachements = {len(message.attachments)}"
+        else:
+            response.error = f"Unexpected status = {message.status.name}"
+    except Exception as e:
+        response.error = e.__str__
+
+    return response

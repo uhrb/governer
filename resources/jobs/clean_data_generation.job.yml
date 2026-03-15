@@ -14,10 +14,10 @@ resources:
           default: ${var.volume}
 
       tasks:
-        - task_key: datagen_task
+        - task_key: data_generation_task
           environment_key: default
           notebook_task:
-            notebook_path: ../../src/data_generation/clean_data_generate.ipynb
+            notebook_path: ../../src/ai/ai_tables_comment.ipynb
           
 
       environments:
