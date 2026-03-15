@@ -1,0 +1,29 @@
+resources:
+  jobs:
+    clean_datagen_generation_job:
+      name: clean_datagen_generation_job
+      description: "This job creates 3 tables with clean data for customers, orders and payments. It uses dbldatagen to generate the data, but with a fixed random seed to ensure the same data is generated on each run."
+      tags:
+        purpose: data_generation
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: schema
+          default: ${var.schema}
+        - name: volume
+          default: ${var.volume}
+
+      tasks:
+        - task_key: datagen_task
+          environment_key: default
+          notebook_task:
+            notebook_path: ../../src/data_generation/clean_data_generate.ipynb
+          
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "4"
+            dependencies:
+              - dbldatagen
+              - ../../dist/*.whl
