@@ -1,20 +1,23 @@
 resources:
   jobs:
-    clean_datagen_generation_job:
-      name: clean_datagen_generation_job
-      description: "This job creates 3 tables with clean data for customers, orders and payments. It uses dbldatagen to generate the data, but with a fixed random seed to ensure the same data is generated on each run."
+    govern_table_comment_job:
+      name: govern_table_comment_job
+      description: "This job inspects known tables and govern that comment is sufficient"
       tags:
-        purpose: data_generation
+        purpose: data_governance
+        operator: ai
       parameters:
         - name: catalog
           default: ${var.catalog}
         - name: schema
           default: ${var.schema}
-        - name: volume
-          default: ${var.volume}
+        - name: govern_table
+          default: ${var.govern_table}
+        - name: warehouse
+          default: ${var.warehouse}
 
       tasks:
-        - task_key: data_generation_task
+        - task_key: table
           environment_key: default
           notebook_task:
             notebook_path: ../../src/ai/ai_tables_comment.ipynb

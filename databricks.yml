@@ -21,6 +21,10 @@ variables:
     description: The schema to use
   volume:
     description: Volume to use
+  warehouse:
+    description: Warehouse to use
+  govern_table:
+    description: Govern table to use
 
 targets:
   dev:
@@ -36,6 +40,8 @@ targets:
       catalog: governer
       schema: ${workspace.current_user.short_name}
       volume: source
+      warehouse: db53e023d60fba04
+      govern_table: govern_table
   prod:
     mode: production
     workspace:

@@ -1,9 +1,14 @@
+from dataclasses import dataclass
+from enum import Enum
+
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
-from databricks.sdk.dbutils import RemoteDbUtils
+from databricks.sdk import WorkspaceClient
+from databricks.sdk.service.dashboards import GenieSpace, MessageStatus
+import json
 
 
-def save_frame_csv(df: DataFrame, output_path: str, dbutils: RemoteDbUtils) -> str:
+def save_frame_csv(df: DataFrame, output_path: str, dbutils: any) -> str:
     """Save a DataFrame to a single CSV file in the specified output path."""
     df.coalesce(1).write.mode("overwrite").csv(output_path, header=True)
     files = dbutils.fs.ls(output_path)
@@ -32,11 +37,63 @@ def validate_schema(df: DataFrame, schema: StructType) -> DataFrame:
         raise ValueError(f"Schema validation failed: {e}")
 
 
-def widget_or_default(dbutils: RemoteDbUtils, key: str, default=None):
-    """Get a widget value or return default if widget doesn't exist or is empty."""
-    try:
-        value = dbutils.widgets.get(key)
-        # Return default if value is None or empty string
-        return value if value and value.strip() else default
-    except Exception:
-        return default
+def get_genie_workspace(space_title: str, warehouse_id: str, tables: list[str]):
+    space_def = {
+        "version": "2",
+        "data_sources": {
+            "tables": [
+                #  {"identifier": "rowdoc.uladzimir_harabtsou.bronze_customers", "description": ["Customer master data"]},
+                #  {"identifier": "rowdoc.uladzimir_harabtsou.bronze_orders", "description": ["Orders"]},
+                #  {"identifier": "rowdoc.uladzimir_harabtsou.bronze_payments", "description": ["Payment transactions"]},
+            ],
+        },
+        ###
+        ###    "instructions": {
+        ###    "text_instructions": [
+        ###    {
+        ###        "id": "01f0b37c378e1c9100000000000000a1",
+        ###        "content": [
+        ###        "General instructions for the space."
+        ###        ]
+        ###    }
+        ###    ],
+        ### }
+    }
+    for table in tables:
+        space_def["data_sources"]["tables"].append({"identifier": table})
+
+    client = WorkspaceClient()
+    spaces = client.genie.list_spaces().spaces
+    for space in spaces:
+        if space.title == space_title:
+            client.genie.trash_space(space.space_id)
+            break
+    space = client.genie.create_space(
+        warehouse_id=warehouse_id,
+        title=space_title,
+        description="Genie workspace for Governer demo",
+        serialized_space=json.dumps(space_def),
+    )
+
+    return space
+
+
+@dataclass
+class AiResponse:
+    prompt: str
+    text: str | None
+    success: bool
+    error: str | None
+
+
+@dataclass
+class GovernStatus(Enum):
+    GENERATED = "GENERATED"
+    DECLINED = "DECLINED"
+    TO_APPLY = "TO_APPLY"
+    OUTDATED = "OUTDATED"
+
+
+def trash_genie_workspace(space: GenieSpace) -> None:
+    client = WorkspaceClient()
+    client.genie.trash_space(space.space_id)
