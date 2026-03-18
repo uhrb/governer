@@ -13,12 +13,14 @@ resources:
           default: ${var.schema}
         - name: govern_table
           default: ${var.govern_table}
+        - name: warehouse
+          default: ${var.warehouse}
 
       tasks:
         - task_key: table
           environment_key: default
           notebook_task:
-            notebook_path: ../../src/ai/ai_table_comment.ipynb
+            notebook_path: ../../src/ai/ai_tables_comment.ipynb
           
 
       environments:

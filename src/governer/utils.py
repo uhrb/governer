@@ -97,22 +97,3 @@ class GovernStatus(Enum):
 def trash_genie_workspace(space: GenieSpace) -> None:
     client = WorkspaceClient()
     client.genie.trash_space(space.space_id)
-
-
-def task_genie(space: GenieSpace, task: str) -> AiResponse:
-    client = WorkspaceClient()
-    response = AiResponse(task, None, False, None)
-    try:
-        message = client.genie.start_conversation_and_wait(space.space_id, task)
-        if message.status == MessageStatus.COMPLETED:
-            if len(message.attachments) > 0:
-                response.text = message.attachments[0].text.content
-                response.success = True
-            else:
-                response.error = f"Unexpected length of attachements = {len(message.attachments)}"
-        else:
-            response.error = f"Unexpected status = {message.status.name}"
-    except Exception as e:
-        response.error = e.__str__
-
-    return response
