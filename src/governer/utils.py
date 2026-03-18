@@ -80,9 +80,18 @@ def get_genie_workspace(space_title: str, warehouse_id: str, tables: list[str]):
 
 @dataclass
 class AiResponse:
+    prompt: str
     text: str | None
     success: bool
     error: str | None
+
+
+@dataclass
+class GovernStatus(Enum):
+    GENERATED = "GENERATED"
+    DECLINED = "DECLINED"
+    TO_APPLY = "TO_APPLY"
+    OUTDATED = "OUTDATED"
 
 
 def trash_genie_workspace(space: GenieSpace) -> None:
@@ -92,7 +101,7 @@ def trash_genie_workspace(space: GenieSpace) -> None:
 
 def task_genie(space: GenieSpace, task: str) -> AiResponse:
     client = WorkspaceClient()
-    response = AiResponse(None, False, None)
+    response = AiResponse(task, None, False, None)
     try:
         message = client.genie.start_conversation_and_wait(space.space_id, task)
         if message.status == MessageStatus.COMPLETED:
