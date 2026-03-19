@@ -2,6 +2,7 @@ from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 
 table_comment_actions = StructType(
     [
+        StructField("record_id", StringType(), False, metadata={"comment": "Record id"}),
         StructField("run_id", StringType(), True, metadata={"comment": "Unique identifier for each govern run"}),
         StructField("table_name", StringType(), True, metadata={"comment": "Table name"}),
         StructField("govern_success", BooleanType(), True, metadata={"comment": "Govern run status"}),

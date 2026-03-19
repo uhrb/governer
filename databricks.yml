@@ -52,6 +52,8 @@ targets:
       catalog: governer
       schema: default
       volume: source
+      warehouse: db53e023d60fba04
+      govern_table: govern_table
     permissions:
       - user_name: uharabtsou@gmail.com
         level: CAN_MANAGE
