@@ -1,8 +1,8 @@
 resources:
   jobs:
-    govern_table_comment_job:
-      name: govern_table_comment_job
-      description: "This job inspects known tables and govern that comment is sufficient"
+    govern_table_pii_job:
+      name: govern_table_pii_job
+      description: "This job inspects known tables and govern that it contain or not PII data"
       tags:
         purpose: data_governance
         operator: ai
@@ -20,7 +20,7 @@ resources:
         - task_key: table
           environment_key: default
           notebook_task:
-            notebook_path: ../../src/ai/ai_tables_comment.ipynb
+            notebook_path: ../../src/ai/ai_tables_pii.ipynb
           
 
       environments:

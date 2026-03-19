@@ -4,7 +4,7 @@
       "name": "govern_table_dataset",
       "displayName": "govern_table",
       "queryLines": [
-        "SELECT * FROM govern_table"
+        "SELECT * FROM ai_govern_table"
       ]
     }
   ],
