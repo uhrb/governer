@@ -1,0 +1,8 @@
+resources:
+  dashboards:
+    table_comments_dashboard:
+      display_name: "Governance overview dashboard"
+      dataset_catalog: ${var.catalog}
+      dataset_schema: ${var.schema}
+      file_path: ../../src/dashboards/table_comments_dashboard.lvdash.json
+      warehouse_id: ${var.warehouse}
