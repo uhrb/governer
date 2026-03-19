@@ -10,6 +10,7 @@ dependencies = [
     # LIMITATION: for pipelines, dependencies are cached during development;
     # add dependencies to the 'environment' section of your pipeline.yml file instead
     "databricks-sdk>=0.99.0",
+    "streamlit>=1.55.0",
 ]
 
 [dependency-groups]
@@ -22,7 +23,8 @@ dev = [
     "dbldatagen",
     "jmespath",
     "pyparsing",
-    "databricks-sdk[notebook]"
+    "databricks-sdk[notebook]",
+    "streamlit"
 ]
 
 [project.scripts]

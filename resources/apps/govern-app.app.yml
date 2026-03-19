@@ -1,0 +1,28 @@
+resources:
+  apps:
+    govern-app:
+      name: "govern-app"
+      source_code_path: ../../src/govern-app/
+      description: "A Databricks govern app"
+      compute_size: "MEDIUM"
+      config:
+        command: ["streamlit", "run", "app.py"]
+        env:
+          - name: warehouse
+            value: ${var.warehouse}
+          - name: catalog
+            value: ${var.catalog}
+          - name: schema
+            value: ${var.schema}
+          - name: govern_table
+            value: ${var.govern_table}
+          - name: "STREAMLIT_GATHER_USAGE_STATS"
+            value: "false"
+      resources:
+        - name : sql-warehouse
+          description: "Sql warehouse to use for SQL queries"
+          sql_warehouse:
+            id: ${var.warehouse}
+            permission: "CAN_USE"
+
+           
