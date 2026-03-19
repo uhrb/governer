@@ -1,0 +1,173 @@
+{
+  "datasets": [
+    {
+      "name": "govern_table_dataset",
+      "displayName": "govern_table",
+      "queryLines": [
+        "SELECT * FROM govern_table"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "govern_dboard_page",
+      "displayName": "Govern page",
+      "layout": [
+        {
+          "widget": {
+            "name": "9018fa05",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 36px;line-height: 1.5;\">Overview of the governance</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "2c6c27ab",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "govern_table_dataset",
+                  "fields": [
+                    {
+                      "name": "status",
+                      "expression": "`status`"
+                    },
+                    {
+                      "name": "hourly(timestamp)",
+                      "expression": "DATE_TRUNC(\"HOUR\", `timestamp`)"
+                    },
+                    {
+                      "name": "count(status)",
+                      "expression": "COUNT(`status`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Status Counts by Minute",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "stack"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "hourly(timestamp)",
+                  "displayName": "Timestamp (Minute)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "count(status)",
+                  "displayName": "Count of Status",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "status",
+                  "displayName": "Status",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "unique-tables-inspected",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "govern_table_dataset",
+                  "fields": [
+                    {
+                      "name": "daily(timestamp)",
+                      "expression": "DATE_TRUNC(\"DAY\", `timestamp`)"
+                    },
+                    {
+                      "name": "countdistinct(table_name)",
+                      "expression": "COUNT(DISTINCT `table_name`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "DATE_TRUNC(\"DAY\", `timestamp`)"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Unique tables inspected"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(table_name)"
+                },
+                "period": {
+                  "fieldName": "daily(timestamp)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "0569b4b0",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "genieSpace": {
+      "isEnabled": false,
+      "enablementMode": "DISABLED"
+    },
+    "applyModeEnabled": false
+  }
+}
