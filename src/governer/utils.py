@@ -97,6 +97,7 @@ class AiResponse:
     text: str | None
     success: bool
     error: str | None
+    queries: List[str]
 
 
 @dataclass
@@ -108,8 +109,8 @@ class AiResponseWithEval(AiResponse):
 class GovernStatus(Enum):
     GENERATED = "GENERATED"
     DECLINED = "DECLINED"
-    TO_APPLY = "TO_APPLY"
-    OUTDATED = "OUTDATED"
+    ARCHIVED = "ARCHIVED"
+    ACCEPTED = "ACCEPTED"
 
 
 def trash_genie_workspace(space: GenieSpace) -> None:
@@ -119,7 +120,7 @@ def trash_genie_workspace(space: GenieSpace) -> None:
 
 def task_genie(space: GenieSpace, task: str) -> AiResponse:
     client = WorkspaceClient()
-    response = AiResponse(task, None, False, None)
+    response = AiResponse(task, None, False, None, [])
     # try:
     message = client.genie.start_conversation_and_wait(space.space_id, task)
     if message.status == MessageStatus.COMPLETED:
@@ -127,6 +128,10 @@ def task_genie(space: GenieSpace, task: str) -> AiResponse:
             for att in message.attachments:
                 if att.text is not None:
                     response.text = att.text.content
+                if att.query is not None:
+                    query_sql = att.query.query
+                    response.queries.append(query_sql)
+
             response.success = True
         else:
             response.error = f"Unexpected length of attachements = {len(message.attachments)}"
