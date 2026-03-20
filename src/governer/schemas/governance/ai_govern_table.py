@@ -1,6 +1,6 @@
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType, FloatType, BooleanType
 
-table_comment_actions = StructType(
+ai_govern_table = StructType(
     [
         StructField("record_id", StringType(), False, metadata={"comment": "Record id"}),
         StructField("run_id", StringType(), True, metadata={"comment": "Unique identifier for each govern run"}),

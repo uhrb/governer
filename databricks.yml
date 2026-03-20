@@ -25,8 +25,6 @@ variables:
     description: Warehouse to use
   govern_table:
     description: Govern table to use
-  govern_table_pii:
-    description:  Govern table pii to use
 
 targets:
   dev:
@@ -44,7 +42,6 @@ targets:
       volume: source
       warehouse: db53e023d60fba04
       govern_table: ai_govern_table
-      govern_table_pii: ai_govern_table_pii
   prod:
     mode: production
     workspace:
@@ -57,7 +54,6 @@ targets:
       volume: source
       warehouse: db53e023d60fba04
       govern_table: ai_govern_table
-      govern_table_pii: ai_govern_table_pii
     permissions:
       - user_name: uharabtsou@gmail.com
         level: CAN_MANAGE

@@ -182,7 +182,7 @@ for index, row in data.iterrows():
         metarow_frame = metadata[metadata["fq_table_name"] == current_table_name]
         if not metarow_frame.empty:
             metarow = metarow_frame.iloc[0]
-            st.caption("Current comment:")
+            st.caption("Current table comment:")
             st.code(metarow["table_comment"], language="text")
             tags = metarow["table_tags"]
             for tag in tags:
